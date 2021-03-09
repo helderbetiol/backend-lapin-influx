@@ -7,8 +7,8 @@ import os
 from dotenv import load_dotenv
 load_dotenv()
 
-HOST = os.environ['HOST']
-PORT = os.environ['PORT']
+HOST = os.environ['INFLUX_HOST']
+PORT = os.environ['INFLUX_PORT']
 USER = os.environ['USER']
 PASSWORD = os.environ['PASSWORD']
 DBNAME = os.environ['DBNAME']
