@@ -2,6 +2,7 @@ from app import app
 from influxdb import InfluxDBClient
 import json
 from flask import request
+from flask_cors import cross_origin
 import os
 
 from dotenv import load_dotenv
@@ -18,7 +19,8 @@ DBNAME = os.environ['DBNAME']
 def index():
     return "Hello, World!"
 
-@app.route('/lapin/<measurement>/<group_id>')
+@app.route('/lapin/<measurement>/<group_id>', methods=['GET', 'OPTIONS'])
+@cross_origin()
 def get_lapin(measurement, group_id):
     print("GET_LAPIN")
     # Database name as query param or default
