@@ -1,9 +1,11 @@
 from app import app
 from influxdb import InfluxDBClient
 import json
-from flask import request
+from flask import request, make_response
 from flask_cors import cross_origin
 import os
+from io import StringIO
+import csv
 
 from dotenv import load_dotenv
 load_dotenv()
@@ -73,12 +75,40 @@ def get_lapin_csv(measurement, group_id):
         query += ';'
     print("Querying data: " + query)
 
-    # Send query and respond
+    # Send query
     result = client.query(query)
-    return result
+    data = list(result.get_points())
+    print(data)
+
+    # Convert to CSV
+    si = StringIO()
+    csv_writer = csv.writer(si)
+    # Counter used for writing headers to the CSV 
+    count = 0
+    for line in data: 
+        print(line)
+        if count == 0: 
+            # Writing headers of CSV file 
+            header = line.keys() 
+            csv_writer.writerow(header) 
+            count += 1
+        # Writing data of CSV file 
+        csv_writer.writerow(line.values()) 
+
+    output = make_response(si.getvalue())
+    output.headers["Content-Disposition"] = "attachment; filename=export.csv"
+    output.headers["Content-type"] = "text/csv"
+    print(output)
+    return output
+
+
+    # print(result)
+
+    # return result
     """
     No caso onde o codigo anterior não funcionasse, tente com este aqui...
     Mas também teria que descomentar o codigo no frontend correspondente ao
     tratamento de dados json...
     response = list(result)
     return json.dumps(response)
+    """
